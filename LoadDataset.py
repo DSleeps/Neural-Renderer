@@ -7,16 +7,16 @@ dataset_folder = 'ThreeDDataset/'
 image_width = 64
 images_per_scene = 20
 
-def load_data():
+def load_data(device):
     # Load the positions and convert them to a tensor
     positions = None
     with open('positions.pickle', 'rb') as f:
         positions = pickle.load(f)
-        positions = torch.from_numpy(np.float32(np.asarray(positions)))
+        positions = torch.from_numpy(np.float32(np.asarray(positions))).to(device)
     
     # Load the images and convert them all to tensors
-    images = torch.zeros(positions.shape[0], images_per_scene, 3, image_width, image_width)
-    for i in range(positions.shape[0] - 950):
+    images = torch.zeros(positions.shape[0], images_per_scene, 3, image_width, image_width).to(device)
+    for i in range(positions.shape[0]):
         # This is the number of images per scene
         for j in range(images_per_scene):
             im = Image.open(dataset_folder + 'scene_' + str(i) + '_' + str(j) + '.png')

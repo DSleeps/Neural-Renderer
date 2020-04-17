@@ -3,10 +3,11 @@ from torch import nn
 
 class Encoder(nn.Module):
     
-    def __init__(self, input_size, output_size, hidden_size):
+    def __init__(self, input_size, output_size, hidden_size, device):
         # Idk why this is here actually, maybe to do the nn.Module init
         super(Encoder, self).__init__()
         
+        self.device = device
         self.position_dim = 3
         self.output_size = output_size
 
@@ -64,12 +65,12 @@ class Encoder(nn.Module):
         for stride in self.strides_2:
             output_length = int(output_length/stride)
 
-        CNN_outs = torch.zeros(inputs.shape[1], batch_size, self.output_size)
+        CNN_outs = torch.zeros(inputs.shape[1], batch_size, self.output_size).to(self.device)
         for i in range(inputs.shape[1]):
             output = self.CNN_1(inputs[:,i,:,:])
             
             im_pos = torch.reshape(im_positions[:,i,:], (batch_size,1,1,im_positions.shape[2]))
-            concat = torch.zeros(batch_size, self.position_dim, self.initial, self.initial)
+            concat = torch.zeros(batch_size, self.position_dim, self.initial, self.initial).to(self.device)
             concat[:] = im_pos.permute(0,3,1,2)
 
             output = torch.cat((output, concat), dim=1)

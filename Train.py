@@ -10,6 +10,9 @@ input_size = 64
 encoding_size = 512
 hidden_size = 512
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(device)
+
 class EncoderDecoder(nn.Module):
 
     def __init__(self):
@@ -46,7 +49,7 @@ iteration_count = 10000
 learning_rate = 0.0001
 
 # Load the dataset
-images, positions = load_data()
+images, positions = load_data(device)
 
 # Initialize the loss and the optimizer
 loss_fn = nn.MSELoss()
