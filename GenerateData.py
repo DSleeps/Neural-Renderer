@@ -2,6 +2,7 @@ import vpython as vp
 import numpy as np
 import random as r
 import time
+import pickle
 
 # The number of scenes to generate
 data_points = 1000 
@@ -64,6 +65,9 @@ s4 = vp.box(pos=vp.vector(0,wall_height/2,-room_width/2), size=vp.vector(room_wi
 print(scene.camera.pos)
 scene.range = 20
 
+positions = []
+prev_angle = 0
+
 # Start the loop
 for i in range(start_num, start_num + data_points):
     num_objects = r.randint(1, max_obs)
@@ -94,6 +98,7 @@ for i in range(start_num, start_num + data_points):
         o.visible = True
     
     # Take screen catpures
+    positions.append([])
     for j in range(samples_per_scene):
         # Set the camera to a random position
         cam_x = r.uniform(-room_width/2.0*0.9, room_width/2.0*0.9)
@@ -108,8 +113,12 @@ for i in range(start_num, start_num + data_points):
         
         # scene.center = vp.vector(cen_x, cen_y, cen_z)
         # scene.center = vp.vector(0,0,0)
+        angle = r.uniform(0,2*np.pi)
+        scene.camera.rotate(angle=angle, axis=vp.vector(0,1,0))
         
-        scene.camera.rotate(angle=r.uniform(0,2*np.pi), axis=vp.vector(0,1,0))
+        new_angle = (prev_angle + angle) % (2*np.pi)
+        positions[-1].append([cam_x, cam_z, new_angle])
+        prev_angle = new_angle
 
         # print(vp.mag(scene.center - scene.camera.pos))
         # print(scene.center)
@@ -117,11 +126,13 @@ for i in range(start_num, start_num + data_points):
         scene.capture('scene_' + str(i) + '_' + str(j) + '.png')
         
         # Gives time for the capture to happen
-        time.sleep(0.25) 
+        time.sleep(1.0) 
 
     # Make the objects invisible again
     for o in objects:
         o.visible = False
-   time.sleep(2)
+    time.sleep(1.5)
 
+with open('positions.pickle', 'wb') as f:
+    pickle.dump(positions, f)
 print('Done')
