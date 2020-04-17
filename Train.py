@@ -18,7 +18,7 @@ class EncoderDecoder(nn.Module):
     def __init__(self):
         super(EncoderDecoder, self).__init__()
 
-        self.encoder = Encoder(input_size, encoding_size, hidden_size)
+        self.encoder = Encoder(input_size, encoding_size, hidden_size, device)
         self.decoder = Decoder(hidden_size, 512, 2, input_size**2 * 3)
 
     def forward(self, inputs, im_positions, desired_positions):
@@ -40,7 +40,7 @@ print(decoder(encoder(inputs, im_positions), desired_positions))
 '''
 
 # Initialize mode
-model = EncoderDecoder()
+model = EncoderDecoder().to(device)
 
 # Training parameters
 batch_size = 25
@@ -49,7 +49,9 @@ iteration_count = 10000
 learning_rate = 0.0001
 
 # Load the dataset
+print('Loading dataset...')
 images, positions = load_data(device)
+print('Loaded!')
 
 # Initialize the loss and the optimizer
 loss_fn = nn.MSELoss()
