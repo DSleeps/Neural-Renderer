@@ -68,6 +68,24 @@ scene.range = 20
 positions = []
 prev_angle = 0
 
+'''
+with open('positions.pickle', 'rb') as f:
+    positions = pickle.load(f)
+    print(len(positions[0]))
+    for i, p in enumerate(positions[1]):
+        cam_x = p[0] 
+        cam_z = p[1] 
+        cam_y = cam_height
+        angle = p[2]
+
+        print(i)
+        scene.camera.pos = vp.vector(cam_x, cam_y, cam_z)
+        scene.camera.rotate(angle=angle, axis=vp.vector(0,1,0))
+        time.sleep(5)
+        scene.camera.rotate(angle=-angle, axis=vp.vector(0,1,0))
+time.sleep(50)
+'''
+
 # Start the loop
 for i in range(start_num, start_num + data_points):
     num_objects = r.randint(1, max_obs)

@@ -35,4 +35,4 @@ def sample_data(batch_size, num_images, dataset, positions):
     im_positions = positions[scene_indices][:,image_choices[:-1],:]
     test_im_positions = positions[scene_indices][:,image_choices[-1],:]
 
-    return images, im_positions, test_images, test_im_positions
+    return images/255., im_positions, test_images/255., test_im_positions

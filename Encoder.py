@@ -47,7 +47,10 @@ class Encoder(nn.Module):
 
         # This is the LSTM that takes the output of the second CNN_2 and encodes
         # it into a vector
-        self.lstm = nn.LSTM(output_size, hidden_size, num_layers=1, bidirectional=False)
+        self.lstm = nn.LSTM(output_size, hidden_size, num_layers=3, bidirectional=False)
+        # self.lstm = nn.RNN(output_size, hidden_size, num_layers=3, nonlinearity='relu')
+
+        self.prints = False
     
     # Where inputs are the input images, im_positions are the positions of the camera
     # at the given images, image_num is the number of images for each scene, and
@@ -72,16 +75,20 @@ class Encoder(nn.Module):
             im_pos = torch.reshape(im_positions[:,i,:], (batch_size,1,1,im_positions.shape[2]))
             concat = torch.zeros(batch_size, self.position_dim, self.initial, self.initial).to(self.device)
             concat[:] = im_pos.permute(0,3,1,2)
-
+            
             output = torch.cat((output, concat), dim=1)
             output = self.CNN_2(output)
             
             # Reshape the output and feed it through a fully connected layer
             output = torch.reshape(output, (batch_size, self.output_length))
             output = self.fully_connected(output)
+            if (self.prints):
+                print(output)
             CNN_outs[i] = output
 
         output, hiddens = self.lstm(CNN_outs)
         output = output[-1]
+        if (self.prints == True):
+            print(output)
         return output
 
